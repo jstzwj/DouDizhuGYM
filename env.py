@@ -2,6 +2,8 @@ import gym
 from gym import spaces
 import numpy as np
 
+import pokercard
+
 
 
 class DouDizhuEnv(gym.Env):
@@ -64,11 +66,33 @@ class DouDizhuEnv(gym.Env):
     def _is_chain(self, cards):
         if len(cards) >= 5:
             cards.sort()
-            for i in range(len(cards) - 1):
-                if cards[i+1] 
+            for i in range(len(cards)):
+                if i != 0:
+                    if cards[i+1] != cards[i].next():
+                        return False
+                if cards[i].special != pokercard.CardSpecial.CardNone:
+                    return False
+            return True
+        return False
 
     def _is_rocket(self, cards):
-        pass
+        if len(cards) == 2:
+            if cards[0].special == pokercard.CardSpecial.CardBlackJoker and \
+                cards[1].special == pokercard.CardSpecial.CardColoredJoker or \
+                    cards[0].special == pokercard.CardSpecial.CardColoredJoker and \
+                        cards[1].special == pokercard.CardSpecial.CardBlackJoker:
+                return True
+
+        return False
 
     def _is_bomb(self, cards):
-        pass
+        if len(cards) > 4:
+            first = cards[0]
+            for each in cards:
+                if each != first:
+                    return False
+            return True
+        return False
+
+if __name__ == "__main__":
+    pass
