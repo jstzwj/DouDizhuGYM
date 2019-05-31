@@ -41,19 +41,37 @@ class DouDizhuEnv(gym.Env):
         if self.viewer is None:
             from gym.envs.classic_control import rendering
             self.viewer = rendering.Viewer(screen_width, screen_height)
-            line = rendering.Line((100,100), (200,200))
-            line.set_color(0, 0, 0)
 
-            img = rendering.Image('doudizhu/resource/J.PNG',18,18)
-            img.set_color(255, 255, 255)
+            def draw_card(card, pos):
+                upline = rendering.Line((pos[0],pos[1]), (pos[0] + 22, pos[1]))
+                downline = rendering.Line((pos[0] + 22,pos[1] + 44), (pos[0], pos[1] + 44))
+                leftline = rendering.Line((pos[0],pos[1] + 44), (pos[0], pos[1]))
+                rightline = rendering.Line((pos[0] + 22,pos[1]), (pos[0] + 22, pos[1] + 44))
 
-            self.viewer.add_geom(line)
-            self.viewer.add_geom(img)
+                self.viewer.add_geom(upline)
+                self.viewer.add_geom(downline)
+                self.viewer.add_geom(leftline)
+                self.viewer.add_geom(rightline)
+
+                if card.suit == CardSuit.SuitHearts:
+                    suit = rendering.Image('doudizhu/resource/h.PNG', 18, 18)
+
+                suit_tran = rendering.Transform(translation=(pos[0] + 11, pos[1] + 11))
+                suit.add_attr(suit_tran)
+                suit.set_color(255,255,255)
+
+                self.viewer.add_geom(suit)
+
+            draw_card(DouDizhuCard('Ah'), (100,100))
+
+            
         return self.viewer.render(return_rgb_array=mode == 'rgb_array')
         
     def close(self):
         return None
 
+
+    # catalog
     def _is_solo(self, cards):
         return len(cards) == 1
 
