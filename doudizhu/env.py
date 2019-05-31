@@ -1,10 +1,17 @@
 import gym
 from gym import spaces
+import pyglet
 import numpy as np
 
-import pokercard
+from .pokercard import DouDizhuCard, CardSpecial, CardRank, Card, CardSuit
+from .player import PLayer
 
 
+class GameState(object):
+    def __init__(self):
+        self.card_num = 1 * 54
+        self.round = 0
+        self.player_states = []
 
 class DouDizhuEnv(gym.Env):
     metadata = {
@@ -12,31 +19,45 @@ class DouDizhuEnv(gym.Env):
         'video.frames_per_second': 2
     }
     def __init__(self):
-        self.card_num = 1 * 54
-        self.round = 0
-        self.player_states = []
-        
+        self.state = GameState()
+        self.viewer = None
         pass
 
     def addPlayer(self, seat_id, stack):
         pass
     
     def step(self, action):
+        reward = 0
+        done = False
         return self.state, reward, done, {}
     
     def reset(self):
         return self.state
         
     def render(self, mode='human'):
-        return None
+        screen_width = 600
+        screen_height = 600
+
+        if self.viewer is None:
+            from gym.envs.classic_control import rendering
+            self.viewer = rendering.Viewer(screen_width, screen_height)
+            line = rendering.Line((100,100), (200,200))
+            line.set_color(0, 0, 0)
+
+            img = rendering.Image('doudizhu/resource/J.PNG',18,18)
+            img.set_color(255, 255, 255)
+
+            self.viewer.add_geom(line)
+            self.viewer.add_geom(img)
+        return self.viewer.render(return_rgb_array=mode == 'rgb_array')
         
     def close(self):
         return None
 
-    def _is_single(self, cards):
+    def _is_solo(self, cards):
         return len(cards) == 1
 
-    def _is_double(self, cards):
+    def _is_pair(self, cards):
         return len(cards) == 2 and cards[0] == cards[1]
     
     def _is_triple(self, cards):
@@ -70,17 +91,17 @@ class DouDizhuEnv(gym.Env):
                 if i != 0:
                     if cards[i+1] != cards[i].next():
                         return False
-                if cards[i].special != pokercard.CardSpecial.CardNone:
+                if cards[i].special != CardSpecial.CardNone:
                     return False
             return True
         return False
 
     def _is_rocket(self, cards):
         if len(cards) == 2:
-            if cards[0].special == pokercard.CardSpecial.CardBlackJoker and \
-                cards[1].special == pokercard.CardSpecial.CardColoredJoker or \
-                    cards[0].special == pokercard.CardSpecial.CardColoredJoker and \
-                        cards[1].special == pokercard.CardSpecial.CardBlackJoker:
+            if cards[0].special == CardSpecial.CardBlackJoker and \
+                cards[1].special == CardSpecial.CardColoredJoker or \
+                    cards[0].special == CardSpecial.CardColoredJoker and \
+                        cards[1].special == CardSpecial.CardBlackJoker:
                 return True
 
         return False
@@ -95,4 +116,7 @@ class DouDizhuEnv(gym.Env):
         return False
 
 if __name__ == "__main__":
-    pass
+    env = gym.make('GridWorld-v1')
+    env.reset()
+    env.render()
+    env.close()
