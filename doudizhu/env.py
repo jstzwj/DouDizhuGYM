@@ -49,7 +49,7 @@ class DouDizhuEnv(gym.Env):
                 spaces.Discrete(self.n_round_limit)
         })
 
-        self.action_space = None
+        self.action_space = spaces.Box(low=0.0, high=1.0, shape=[self.n_cards], dtype=np.float32)
         self.viewer = None
         pass
 
@@ -59,10 +59,10 @@ class DouDizhuEnv(gym.Env):
     def step(self, action):
         reward = 0
         done = False
-        return self.state, reward, done, {}
+        return self.observation_space, reward, done, {}
     
     def reset(self):
-        return self.state
+        return self.observation_space
         
     def render(self, mode='human'):
         pass
