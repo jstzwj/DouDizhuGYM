@@ -7,19 +7,49 @@ from .pokercard import DouDizhuCard, CardSpecial, CardRank, Card, CardSuit
 from .player import PLayer
 
 
-class GameState(object):
-    def __init__(self):
-        self.card_num = 1 * 54
-        self.round = 0
-        self.player_states = []
-
 class DouDizhuEnv(gym.Env):
     metadata = {
         'render.modes': ['human', 'rgb_array'],
         'video.frames_per_second': 2
     }
     def __init__(self):
-        self.state = GameState()
+        self.n_cards = 1 * 54 + 1
+        self.n_players = 3
+        self.n_bid_score = 4
+        self.n_pocket_cards = 20
+        self.n_round_limit = self.n_cards
+
+        self.round = 0
+        self.player_states = []
+
+
+        self.observation_space = spaces.Dict({
+            'player_states':
+                spaces.Dict(
+                    {
+                        'player_infos':
+                            spaces.Dict({
+                                'bid_score':
+                                    spaces.Tuple(
+                                        [spaces.Discrete(self.n_bid_score)] * self.n_players
+                                    ),
+                                'landlord':
+                                    spaces.Discrete(2)
+                            }),
+                        'player_hands':
+                            spaces.Tuple(
+                            [
+                                spaces.Tuple([spaces.Discrete(self.n_cards)]*self.n_pocket_cards)
+                            ] * self.n_players
+                            )
+                    }
+                )
+            ,
+            'round':
+                spaces.Discrete(self.n_round_limit)
+        })
+
+        self.action_space = None
         self.viewer = None
         pass
 
@@ -35,41 +65,16 @@ class DouDizhuEnv(gym.Env):
         return self.state
         
     def render(self, mode='human'):
-        screen_width = 600
-        screen_height = 600
-
-        if self.viewer is None:
-            from gym.envs.classic_control import rendering
-            self.viewer = rendering.Viewer(screen_width, screen_height)
-
-            def draw_card(card, pos):
-                upline = rendering.Line((pos[0],pos[1]), (pos[0] + 22, pos[1]))
-                downline = rendering.Line((pos[0] + 22,pos[1] + 44), (pos[0], pos[1] + 44))
-                leftline = rendering.Line((pos[0],pos[1] + 44), (pos[0], pos[1]))
-                rightline = rendering.Line((pos[0] + 22,pos[1]), (pos[0] + 22, pos[1] + 44))
-
-                self.viewer.add_geom(upline)
-                self.viewer.add_geom(downline)
-                self.viewer.add_geom(leftline)
-                self.viewer.add_geom(rightline)
-
-                if card.suit == CardSuit.SuitHearts:
-                    suit = rendering.Image('doudizhu/resource/h.PNG', 18, 18)
-
-                suit_tran = rendering.Transform(translation=(pos[0] + 11, pos[1] + 11))
-                suit.add_attr(suit_tran)
-                suit.set_color(255,255,255)
-
-                self.viewer.add_geom(suit)
-
-            draw_card(DouDizhuCard('Ah'), (100,100))
-
-            
-        return self.viewer.render(return_rgb_array=mode == 'rgb_array')
+        pass
         
     def close(self):
         return None
 
+    def _make_action_space(self):
+        
+        ret = None
+
+        return ret
 
     # catalog
     def _is_solo(self, cards):
