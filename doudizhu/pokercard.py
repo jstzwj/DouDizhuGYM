@@ -285,6 +285,98 @@ class DouDizhuCard(Card):
 
 class DouDizhuRank(object):
     @staticmethod
+    def card_to_id(card):
+        if card.special == CardSpecial.CardColoredJoker:
+            return 52
+        elif card.special == CardSpecial.CardBlackJoker:
+            return 53
+        id = 0
+        if card.suit == CardSuit.SuitHearts:
+            id = 13*0
+        elif card.suit == CardSuit.SuitSpades:
+            id = 13*1
+        elif card.suit == CardSuit.SuitClubs:
+            id = 13*2
+        elif card.suit == CardSuit.SuitDiamonds:
+            id = 13*3
+        
+        if card.rank == CardRank.CardA:
+            id += 0
+        elif card.rank == CardRank.Card2:
+            id += 1
+        elif card.rank == CardRank.Card3:
+            id += 2
+        elif card.rank == CardRank.Card4:
+            id += 3
+        elif card.rank == CardRank.Card5:
+            id += 4
+        elif card.rank == CardRank.Card6:
+            id += 5
+        elif card.rank == CardRank.Card7:
+            id += 6
+        elif card.rank == CardRank.Card8:
+            id += 7
+        elif card.rank == CardRank.Card9:
+            id += 8
+        elif card.rank == CardRank.CardT:
+            id += 9
+        elif card.rank == CardRank.CardJ:
+            id += 10
+        elif card.rank == CardRank.CardQ:
+            id += 11
+        elif card.rank == CardRank.CardK:
+            id += 12
+
+        return id
+
+    @staticmethod
+    def id_to_card(id):
+        card = DouDizhuCard()
+        if id == 52:
+            card.special = CardSpecial.CardColoredJoker
+        elif id == 53:
+            card.special = CardSpecial.CardBlackJoker
+
+        if id >= 0 and id < 13*1:
+            card.suit = CardSuit.SuitHearts
+        elif id >= 13*1 and id < 13*2:
+            card.suit = CardSuit.SuitSpades
+        elif id >= 13*2 and id < 13*3:
+            card.suit = CardSuit.SuitClubs
+        elif id >= 13*3 and id < 13*4:
+            card.suit = CardSuit.SuitDiamonds
+        
+
+        id_mod = id % 13
+        if id_mod == 0:
+            card.rank = CardRank.CardA
+        elif id_mod == 1:
+            card.rank = CardRank.Card2
+        elif id_mod == 2:
+            card.rank = CardRank.Card3
+        elif id_mod == 3:
+            card.rank = CardRank.Card4
+        elif id_mod == 4:
+            card.rank = CardRank.Card5
+        elif id_mod == 5:
+            card.rank = CardRank.Card6
+        elif id_mod == 6:
+            card.rank = CardRank.Card7
+        elif id_mod == 7:
+            card.rank = CardRank.Card8
+        elif id_mod == 8:
+            card.rank = CardRank.Card9
+        elif id_mod == 9:
+            card.rank = CardRank.CardT
+        elif id_mod == 10:
+            card.rank = CardRank.CardJ
+        elif id_mod == 11:
+            card.rank = CardRank.CardQ
+        elif id_mod == 12:
+            card.rank = CardRank.CardK
+
+        return card
+    @staticmethod
     def card_to_int(card):        
         if card.rank == CardRank.CardA:
             return 14

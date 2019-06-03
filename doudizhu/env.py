@@ -20,6 +20,8 @@ class DouDizhuEnv(gym.Env):
         self.n_round_limit = self.n_cards
 
         self.round = 0
+        self.cur_player = 0
+        self.last_cards = None
         self.player_states = []
 
 
@@ -39,7 +41,7 @@ class DouDizhuEnv(gym.Env):
                         'player_hands':
                             spaces.Tuple(
                             [
-                                spaces.Tuple([spaces.Discrete(self.n_cards)]*self.n_pocket_cards)
+                                spaces.Box(low=0.0, high=1.0, shape=[self.n_cards], dtype=np.float32)
                             ] * self.n_players
                             )
                     }
@@ -65,7 +67,7 @@ class DouDizhuEnv(gym.Env):
         return self.observation_space
         
     def render(self, mode='human'):
-        pass
+        print('round:{round}'.format(round=self.round))
         
     def close(self):
         return None

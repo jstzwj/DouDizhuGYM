@@ -5,5 +5,7 @@ class PLayer(object):
         self.player_id = player_id
 
         self.hand = []
-        self.stack = stack
         self.seat = -1
+        self.is_landlord = False
+        self.bid_score = 0
+        
