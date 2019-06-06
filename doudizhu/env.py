@@ -2,6 +2,8 @@ import gym
 from gym import spaces
 import pyglet
 import numpy as np
+import uuid
+import random
 
 from .pokercard import DouDizhuCard, CardSpecial, CardRank, Card, CardSuit
 from .player import PLayer
@@ -48,15 +50,19 @@ class DouDizhuEnv(gym.Env):
                 )
             ,
             'round':
-                spaces.Discrete(self.n_round_limit)
+                spaces.Discrete(self.n_round_limit),
+            'game_stage':
+                spaces.Discrete(2)
         })
 
         self.action_space = spaces.Box(low=0.0, high=1.0, shape=[self.n_cards], dtype=np.float32)
         self.viewer = None
         pass
 
-    def addPlayer(self, seat_id, stack):
-        pass
+    def add_player(self, seat_id, name='player'):
+        p = PLayer(uuid.uuid4(), seat_id)
+        p.set_name(name)
+        self.player_states.append(p)
     
     def step(self, action):
         reward = 0
@@ -71,6 +77,13 @@ class DouDizhuEnv(gym.Env):
         
     def close(self):
         return None
+
+    def dealt_card(self, cards):
+        player_num = len(self.player_states)
+        dealt_round = 0
+        for each in cards:
+            self.player_states[dealt_round%player_num].hand.append(each)
+            dealt_round += 1
 
     def _make_action_space(self):
         
