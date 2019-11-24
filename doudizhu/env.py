@@ -15,7 +15,7 @@ class DouDizhuEnv(gym.Env):
         'video.frames_per_second': 2
     }
     def __init__(self):
-        self.n_cards = 1 * 54 + 1
+        self.n_cards = 1 * 54
         self.n_players = 3
         self.n_bid_score = 4
         self.n_pocket_cards = 20
@@ -38,24 +38,24 @@ class DouDizhuEnv(gym.Env):
                                         [spaces.Discrete(self.n_bid_score)] * self.n_players
                                     ),
                                 'landlord':
-                                    spaces.Discrete(2)
+                                    spaces.Discrete(self.n_players),
+                                'left_cards':
+                                    spaces.Tuple(
+                                        [spaces.Discrete(self.n_cards)] * self.n_players
+                                    )
                             }),
                         'player_hands':
-                            spaces.Tuple(
-                            [
-                                spaces.Box(low=0.0, high=1.0, shape=[self.n_cards], dtype=np.float32)
-                            ] * self.n_players
-                            )
+                            spaces.MultiBinary(self.n_cards)
                     }
                 )
             ,
             'round':
                 spaces.Discrete(self.n_round_limit),
             'game_stage':
-                spaces.Discrete(2)
+                spaces.Discrete(self.n_players)
         })
 
-        self.action_space = spaces.Box(low=0.0, high=1.0, shape=[self.n_cards], dtype=np.float32)
+        self.action_space = spaces.MultiBinary(self.n_cards)
         self.viewer = None
         pass
 
