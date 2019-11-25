@@ -11,4 +11,18 @@ class PLayer(object):
 
     def set_name(self, name):
         self.name = name
+
+    def set_bid_score(self, score):
+        self.bid_score = score
+
+    def set_landlord(self, is_landlord = True):
+        self.is_landlord = is_landlord
+
+    def set_seat(self, seat):
+        self.seat = seat
+
+    def left_cards_num(self):
+        return len(self.hand)
+
+    
         

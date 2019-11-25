@@ -9,7 +9,17 @@ from .pokercard import DouDizhuCard, CardSpecial, CardRank, Card, CardSuit
 from .player import PLayer
 
 
-class DouDizhuEnv(gym.Env):
+class MultiAgentEnv(gym.Env):
+
+    def step(self, action_n):
+        obs_n    = list()
+        reward_n = list()
+        done_n   = list()
+        info_n   = {'n': []}
+        # ...
+        return obs_n, reward_n, done_n, info_n
+
+class DouDizhuEnv(MultiAgentEnv):
     metadata = {
         'render.modes': ['human', 'rgb_array'],
         'video.frames_per_second': 2
@@ -25,7 +35,6 @@ class DouDizhuEnv(gym.Env):
         self.cur_player = 0
         self.last_cards = None
         self.player_states = []
-
 
         self.observation_space = spaces.Dict({
             'player_states':
@@ -55,7 +64,7 @@ class DouDizhuEnv(gym.Env):
                 spaces.Discrete(self.n_players)
         })
 
-        self.action_space = spaces.MultiBinary(self.n_cards)
+        self.action_space = spaces.Tuple([spaces.MultiBinary(self.n_cards), spaces.Discrete(self.n_bid_score)])
         self.viewer = None
         pass
 
@@ -65,8 +74,20 @@ class DouDizhuEnv(gym.Env):
         self.player_states.append(p)
     
     def step(self, action):
+        
         reward = 0
+        # if game end
         done = False
+        for each_player in self.player_states:
+            if each_player.left_cards_num() == 0:
+                done = True
+                break
+
+        # switch player
+        self.cur_player = self.cur_player + 1
+        if self.cur_player == self.n_players:
+            self.cur_player = 0
+            self.round += 1
         return self.observation_space, reward, done, {}
     
     def reset(self):
