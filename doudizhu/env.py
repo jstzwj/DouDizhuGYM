@@ -73,14 +73,20 @@ class DouDizhuEnv(MultiAgentEnv):
         p.set_name(name)
         self.player_states.append(p)
     
+    def _get_obs(self, player_id):
+        pass
+
     def step(self, action):
         
-        reward = 0
+        reward = [0] * self.n_players
         # if game end
         done = False
-        for each_player in self.player_states:
+        for i, each_player in enumerate(self.player_states):
             if each_player.left_cards_num() == 0:
                 done = True
+
+                reward = [-1 for _each in reward]
+                reward[i] = 1
                 break
 
         # switch player
