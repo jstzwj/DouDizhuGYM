@@ -78,9 +78,25 @@ class DouDizhuEnv(MultiAgentEnv):
 
     def step(self, action):
         
+        # bid or play update env
+        if self.round == 0:
+            action = action[1]
+            if action < 0 or action >= 4:
+                print("invalid bid score")
+                return
+            self.player_states[self.cur_player].set_bid_score(action)
+        else:
+            action = action[0]
+
+            for each_card in action:
+                if each_card in self.player_states[self.cur_player].hand:
+                    self.player_states[self.cur_player].hand.remove(each_card)
+                else:
+                    print("invalid action, card no found in player's hand")
+                    return
+
+        # reward
         reward = [0] * self.n_players
-        # if game end
-        done = False
         for i, each_player in enumerate(self.player_states):
             if each_player.left_cards_num() == 0:
                 done = True
